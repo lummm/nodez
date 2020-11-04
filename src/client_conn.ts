@@ -6,6 +6,7 @@ import * as msg from "./msg";
 
 
 const DEFAULT_TIMEOUT = 5000
+const TIMEOUT_RESPONSE = [Buffer.from("EZ_ERR"), Buffer.from("TIMEOUT")];
 
 
 export class ClientConn {
@@ -32,10 +33,17 @@ export class ClientConn {
   ): Promise<Buffer[]> {
     return new Promise(async (resolve, reject) => {
       const reqId = await this.getReqId();
-      await this.dealer.send(msg.request(reqId, serviceName, body));
+      const timeoutHandle = setTimeout(() => {
+        if (this.responseHandlers.has(reqId)) {
+          this.responseHandlers.delete(reqId);
+          resolve(TIMEOUT_RESPONSE);
+        }
+      }, timeout);
       this.responseHandlers.set(reqId, (response: Buffer[]) => {
+        clearTimeout(timeoutHandle);
         resolve(response);
       });
+      await this.dealer.send(msg.request(reqId, serviceName, body));
     });
   }
 

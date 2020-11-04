@@ -1,12 +1,15 @@
 import { ClientConn } from "./src/client_conn";
 
 
+async function req(client: ClientConn) {
+  return (await client.req("TEST", [JSON.stringify({hey: "there"})]))
+    .map((b) => b.toString());
+}
+
 async function main() {
   const client = new ClientConn("tcp://localhost:9000");
-  const req = JSON.stringify({hey: "there"});
-  const [ok, res] = (await client.req("TEST", [req]))
-                      .map((b) => b.toString());
-  console.log(ok, res);
+  const results = await Promise.all([1, 2, 3, 4, 5].map(_ => req(client)));
+  console.log(results);
 }
 
 main();
