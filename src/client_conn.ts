@@ -29,25 +29,26 @@ export class ClientConn {
     serviceName: string,
     body: string[],
     timeout: number = DEFAULT_TIMEOUT,
-  ): Promise<any> {
+  ): Promise<Buffer[]> {
     return new Promise(async (resolve, reject) => {
       const reqId = await this.getReqId();
       await this.dealer.send(msg.request(reqId, serviceName, body));
-      resolve("OK");
+      this.responseHandlers.set(reqId, (response: Buffer[]) => {
+        resolve(response);
+      });
     });
   }
 
   private setupListen(): void {
-    const onMsg = (msg) => {
-      // figure out req id, call its handler
-      const reqId = "1";
-      console.log(`got response ${msg}`);
-      if (!this.responseHandlers.has(reqId)) {
-        console.log(`bad req id ${reqId}`);
+    const onMsg = (frames: Buffer[]) => {
+      const reqId = frames[1].toString();
+      const response = frames.slice(2);
+      const cb = this.responseHandlers.get(reqId);
+      if (!cb) {
+        console.log(`bad req id - `, reqId);
       } else {
-        const cb = this.responseHandlers.get(reqId);
         this.responseHandlers.delete(reqId);
-        cb(msg);
+        cb(response);
       }
       this.dealer.receive().then(onMsg);
     }
