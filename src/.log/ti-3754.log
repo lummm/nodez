@@ -1,0 +1,19 @@
+[9:32:19.969] Global cache location '/home/liam/.cache/typescript/3.9', safe file path '/usr/lib/node_modules/typescript/lib/typingSafeList.json', types map path /usr/lib/node_modules/typescript/lib/typesMap.json
+[9:32:19.970] Processing cache location '/home/liam/.cache/typescript/3.9'
+[9:32:19.970] Trying to find '/home/liam/.cache/typescript/3.9/package.json'...
+[9:32:19.971] Loaded content of '/home/liam/.cache/typescript/3.9/package.json': {"private":true,"dependencies":{"types-registry":"^0.1.511"}}
+[9:32:19.971] Loaded content of '/home/liam/.cache/typescript/3.9/package-lock.json'
+[9:32:19.971] Finished processing cache location '/home/liam/.cache/typescript/3.9'
+[9:32:19.971] Process id: 3761
+[9:32:19.971] NPM location: /usr/bin/npm (explicit '--npmLocation' not  provided)
+[9:32:19.971] validateDefaultNpmLocation: false
+[9:32:19.971] Npm config file: /home/liam/.cache/typescript/3.9/package.json
+[9:32:19.971] Updating types-registry npm package...
+[9:32:19.971] Exec: /usr/bin/npm install --ignore-scripts types-registry@latest
+[9:32:20.836]     Succeeded. stdout:
+    + types-registry@0.1.514
+    updated 1 package and audited 1 package in 0.534s
+found 0 vulnerabilities
+
+
+[9:32:20.837] Updated types-registry npm package
