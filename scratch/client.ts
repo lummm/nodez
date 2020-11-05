@@ -1,4 +1,4 @@
-import { ClientConn } from "./src/index";
+import { ClientConn } from "../src/index";
 
 
 async function req(client: ClientConn) {

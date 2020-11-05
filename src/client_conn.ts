@@ -11,7 +11,7 @@ const TIMEOUT_RESPONSE = [Buffer.from("EZ_ERR"), Buffer.from("TIMEOUT")];
 
 export class ClientConn {
 
-  private id: string = Date.now().valueOf().toString();
+  private id: string = crypto.randomFillSync(Buffer.alloc(8)).toString();
   private dealer: zmq.Dealer;
   private responseHandlers = new Map();
 
@@ -22,7 +22,7 @@ export class ClientConn {
       routingId: this.id,
     });
     this.dealer.connect(this.connectStr);
-    console.info(`dealer connected to ${this.connectStr}`);
+    console.info(`client dealer connected to ${this.connectStr}`);
     this.setupListen();
   }
 
@@ -53,7 +53,7 @@ export class ClientConn {
       const response = frames.slice(2);
       const cb = this.responseHandlers.get(reqId);
       if (!cb) {
-        console.log(`bad req id - `, reqId);
+        console.log(`received response after timeout -`, reqId);
       } else {
         this.responseHandlers.delete(reqId);
         cb(response);
