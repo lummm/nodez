@@ -28,7 +28,7 @@ export class ClientConn {
 
   public req(
     serviceName: string,
-    body: string[],
+    body: Buffer[],
     timeout: number = DEFAULT_TIMEOUT,
   ): Promise<Buffer[]> {
     return new Promise(async (resolve, reject) => {
