@@ -6,17 +6,20 @@ const REPLY = Buffer.from([2]);
 const ACK = Buffer.from([3]);
 
 export function request(
-  reqId: string,
-  serviceName: string,
+  reqId: Buffer,
+  serviceName: Buffer,
   body: Buffer[],
 ): Buffer[] {
   return [
-    Buffer.from(""), CLIENT, Buffer.from(reqId), Buffer.from(serviceName),
+    Buffer.from(""),
+    CLIENT,
+    reqId,
+    serviceName,
   ].concat(body);
 }
 
-export function heartbeat(serviceName: string): Buffer[] {
-  return worker_msg([HEARTBEAT, Buffer.from(serviceName)]);
+export function heartbeat(serviceName: Buffer): Buffer[] {
+  return worker_msg([HEARTBEAT, serviceName]);
 }
 
 export function response(reqId: Buffer, reply: Buffer[]): Buffer[] {

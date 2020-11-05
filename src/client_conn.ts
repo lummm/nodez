@@ -11,7 +11,7 @@ const TIMEOUT_RESPONSE = [Buffer.from("EZ_ERR"), Buffer.from("TIMEOUT")];
 
 export class ClientConn {
 
-  private id: string = crypto.randomFillSync(Buffer.alloc(8)).toString();
+  private id: string = crypto.randomFillSync(Buffer.alloc(8)).toString("hex");
   private dealer: zmq.Dealer;
   private responseHandlers = new Map();
 
@@ -27,19 +27,20 @@ export class ClientConn {
   }
 
   public req(
-    serviceName: string,
+    serviceName: Buffer,
     body: Buffer[],
     timeout: number = DEFAULT_TIMEOUT,
   ): Promise<Buffer[]> {
     return new Promise(async (resolve, reject) => {
       const reqId = await this.getReqId();
+      const reqIdHex = reqId.toString("hex");
       const timeoutHandle = setTimeout(() => {
-        if (this.responseHandlers.has(reqId)) {
-          this.responseHandlers.delete(reqId);
+        if (this.responseHandlers.has(reqIdHex)) {
+          this.responseHandlers.delete(reqIdHex);
           resolve(TIMEOUT_RESPONSE);
         }
       }, timeout);
-      this.responseHandlers.set(reqId, (response: Buffer[]) => {
+      this.responseHandlers.set(reqIdHex, (response: Buffer[]) => {
         clearTimeout(timeoutHandle);
         resolve(response);
       });
@@ -49,13 +50,15 @@ export class ClientConn {
 
   private setupListen(): void {
     const onMsg = (frames: Buffer[]) => {
-      const reqId = frames[1].toString();
+      const reqId = frames[1];
+      const reqIdHex = reqId.toString("hex");
       const response = frames.slice(2);
-      const cb = this.responseHandlers.get(reqId);
+      const cb = this.responseHandlers.get(reqIdHex);
       if (!cb) {
-        console.log(`received response after timeout -`, reqId);
+        console.info(`no handler for req id, possible timeout -`,
+                     reqId.toString("hex"));
       } else {
-        this.responseHandlers.delete(reqId);
+        this.responseHandlers.delete(reqIdHex);
         cb(response);
       }
       this.dealer.receive().then(onMsg);
@@ -63,10 +66,10 @@ export class ClientConn {
     this.dealer.receive().then(onMsg);
   }
 
-  private getReqId(): Promise<string> {
+  private getReqId(): Promise<Buffer> {
     return new Promise((res, rej) => {
       crypto.randomBytes(8, (err, buffer) => {
-        res(buffer.toString("hex"));
+        res(buffer);
       })
     });
   }

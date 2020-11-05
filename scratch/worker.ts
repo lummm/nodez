@@ -17,7 +17,7 @@ async function handler(frames: Buffer[]): Promise<Buffer[]> {
 async function main() {
   const worker = new WorkerConn(
     "tcp://localhost:9004",
-    "TEST",
+    Buffer.from("TEST"),
     2000,
     50,
   );

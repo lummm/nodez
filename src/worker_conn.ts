@@ -18,7 +18,7 @@ export class WorkerConn {
 
   constructor(
     private connectStr: string,
-    private serviceName: string,
+    private serviceName: Buffer,
     private liveliness: number,
     private maxConcurrentTasks: number,
   ) {

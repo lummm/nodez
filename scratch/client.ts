@@ -4,7 +4,7 @@ import { ClientConn } from "../src/index";
 async function req(client: ClientConn) {
   const req = [JSON.stringify({hey: "there"})]
                 .map((x) => Buffer.from(x));
-  return (await client.req("TEST", req))
+  return (await client.req(Buffer.from("TEST"), req))
     .map((b) => b.toString());
 }
 
